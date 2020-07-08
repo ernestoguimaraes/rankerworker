@@ -12,9 +12,9 @@ As the name said, this component will take advantage of Azure SQL Server [rankin
 
 > Distributes the rows in an ordered partition into a specified number of groups. The groups are numbered, starting at one. For each row, NTILE returns the number of the group to which the row belongs.
 
-In other others, NLITE will take your data, and separate it according the value you add. Example:
+In other others, NTILE will take your data, and separate it according the value you add. Example:
 
-###  Before NLITE
+###  Before NTILE
 
 | ID        | Name           | Rate  |
 | ------------- |:-------------:| -----:|
@@ -25,9 +25,9 @@ In other others, NLITE will take your data, and separate it according the value 
 | 5      | Mike     |    $30 |
 
 
-###  After NLITE
+###  After NTILE
 
-Applying NLITE(2) - Check the sintax and examples [here](https://docs.microsoft.com/en-us/sql/t-sql/functions/ntile-transact-sql?view=sql-server-ver15)
+Applying NTILE(3) - Check the sintax and examples [here](https://docs.microsoft.com/en-us/sql/t-sql/functions/ntile-transact-sql?view=sql-server-ver15)
 
 | ID        | Name           | Rate  | Rank
 | ------------- |:-------------:| -----:| -----:| 
@@ -38,13 +38,25 @@ Applying NLITE(2) - Check the sintax and examples [here](https://docs.microsoft.
 | 5      | Mike     |    $30 | 3
 
 
-If you observe, NLITE took the data according with the informed value and ranked the data, equally. In this way, if you want to have 100 workers taking slices of this data, we can add NLITE (100)
+If you observe, NTILE took the data according with the informed value and ranked the data, equally. In this way, if you want to have 100 workers taking slices of this data, we can add NTILE (100)
+
+One example showing the sintax of NTILE. 
+
+```
+SELECT [CustomerID]      
+      ,[Title]
+      ,[FirstName]
+      ,[MiddleName]
+      ,[LastName]   
+	  , NTILE(2) OVER(ORDER BY [LastName] DESC) AS Rank  
+FROM [SalesLT].[Customer]
+```
 
  Why is it important now? The large amount of information now can have a columns where the worked can search for and retrieve only a subset of information.
 
  ### Add the job ticket to worker
 
- Here is the trick. When the Ranker finish the ranking job, it puts in a Queue messages to the workers. So, if you choose NLITE(20) you need to add 20 messages which the body from each message will contains a numer. Like 1,2,3,4... 20. This will instruct the workers in what to do.
+ Here is the trick. When the Ranker finish the ranking job, it puts in a Queue messages to the workers. So, if you choose NTILE(20) you need to add 20 messages which the body from each message will contains a numer. Like 1,2,3,4... 20. This will instruct the workers in what to do.
 
 
 ## Worker
@@ -63,7 +75,7 @@ If the resources get compromissed, the auto scale from cloud providers will happ
 ## Tips
 
 
-1.  A good way to find the NLITE nuber is to define how many records do your work can process. Supposing that it can handles 10.000 lines and you have 1M records. You can calculate : 1.000.000 / 10.000 = 100. Your NLITE will be 100.
+1.  A good way to find the NTILE nuber is to define how many records do your work can process. Supposing that it can handles 10.000 lines and you have 1M records. You can calculate : 1.000.000 / 10.000 = 100. Your NTILE will be 100.
 
 2. To achieve the scalability, you can´t wait the worker to finish an amount of pages to get a next message. It will be blocked processing a page instead of getting pages and using the server resources for that.
 

@@ -1,6 +1,6 @@
 # Ranker-Worker Architecture
 
-![Ranker-worker architecture diagram](.\images\architecture.PNG)
+![Ranker-worker architecture diagram](/images/architecture.PNG)
 
 Usually when designing a solution, we thing about decoupling the parts, so all components can scale, improving resilience and performance.
 
